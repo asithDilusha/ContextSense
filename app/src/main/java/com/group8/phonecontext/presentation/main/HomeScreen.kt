@@ -328,7 +328,7 @@ private fun LiveTelemetryCard(uiState: MainUiState) {
     val varianceStatusColor = if (variance >= 0.85) AmberAlert else EmeraldPulse
 
     val lux = uiState.liveLightLux
-    val luxStatus = if (lux < 10f) "Dark < 10 Lux" else "Lit Environment"
+    val luxStatus = if (lux <= 15f) "Dark ≤ 15 Lux" else "Lit Environment"
 
     val zAxis = uiState.liveAz
     val orientationLabel = when {
@@ -379,7 +379,7 @@ private fun LiveTelemetryCard(uiState: MainUiState) {
                 label = "AMBIENT LIGHT",
                 value = String.format(Locale.US, "%.1f Lux", lux),
                 subtext = luxStatus,
-                subtextColor = if (lux < 10f) ElectricViolet else MutedAsh,
+                subtextColor = if (lux <= 15f) ElectricViolet else MutedAsh,
                 modifier = Modifier.weight(1f)
             )
         }

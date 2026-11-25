@@ -145,20 +145,22 @@ class ProcessSensorWindowUseCase(
         }
 
         val horizontalAccel = hypot(meanX.toDouble(), meanY.toDouble()).toFloat()
-        val isDarkOrCovered = meanLightLux <= thresholds.darkLuxThreshold ||
-            proximityState == ProximityState.NEAR
+        val isDark = meanLightLux <= thresholds.darkLuxThreshold
+        val isCovered = proximityState == ProximityState.NEAR
+        val isDarkAndCovered = isDark && isCovered
+        val isDarkOrCovered = isDark || isCovered
 
         // 2. Face-down on desk: stationary, gravity predominantly along -Z (~ -9.81 m/s^2),
-        //    minimal horizontal tilt, and screen covered/dark.
+        //    minimal horizontal tilt, and screen both dark and covered (proximity NEAR).
         val isFlatFaceDown = meanZ <= thresholds.deskMaxZ &&
             horizontalAccel <= thresholds.deskMaxHorizontalAccel
-        if (movementVariance <= thresholds.deskMaxVariance && isFlatFaceDown && isDarkOrCovered) {
+        if (movementVariance <= thresholds.deskMaxVariance && isFlatFaceDown && isDarkAndCovered) {
             return ContextType.DESK_FACE_DOWN
         }
 
         // 3. Inside pocket while sitting: dark/covered and stationary/low motion, but oriented
         //    tilted or vertical rather than flat face-down on a horizontal desk.
-        if (isDarkOrCovered && !isFlatFaceDown) {
+        if (isDarkAndCovered && !isFlatFaceDown) {
             return ContextType.POCKET_SEATED
         }
 

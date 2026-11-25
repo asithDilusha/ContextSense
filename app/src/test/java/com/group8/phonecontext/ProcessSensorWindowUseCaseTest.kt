@@ -43,6 +43,56 @@ class ProcessSensorWindowUseCaseTest {
     }
 
     @Test
+    fun `does not classify stationary face-down dark window as DESK_FACE_DOWN when proximity is FAR`() {
+        val readings = generateReadings(
+            hz = 20,
+            durationSec = 3,
+            ax = { 0.08f },
+            ay = { -0.05f },
+            az = { -9.80f },
+            lightLux = 1.2f,
+            proximityCm = 5.0f,
+            proximityState = ProximityState.FAR
+        )
+
+        val window = useCase(
+            readings = readings,
+            windowIndex = 1,
+            requestedRate = SamplingRateHz.HZ_20,
+            windowStartTimeMs = 1_000L,
+            windowEndTimeMs = 4_000L
+        )
+
+        assertEquals(ContextType.UNKNOWN, window.predictedContext)
+        assertEquals(ProximityState.FAR, window.proximityState)
+    }
+
+    @Test
+    fun `does not classify stationary face-down bright window as DESK_FACE_DOWN even when proximity is NEAR`() {
+        val readings = generateReadings(
+            hz = 20,
+            durationSec = 3,
+            ax = { 0.08f },
+            ay = { -0.05f },
+            az = { -9.80f },
+            lightLux = 120.0f,
+            proximityCm = 0.0f,
+            proximityState = ProximityState.NEAR
+        )
+
+        val window = useCase(
+            readings = readings,
+            windowIndex = 1,
+            requestedRate = SamplingRateHz.HZ_20,
+            windowStartTimeMs = 1_000L,
+            windowEndTimeMs = 4_000L
+        )
+
+        assertEquals(ContextType.UNKNOWN, window.predictedContext)
+        assertEquals(ProximityState.NEAR, window.proximityState)
+    }
+
+    @Test
     fun `separates stationary dark seated pocket from face-down desk using orientation`() {
         val readings = generateReadings(
             hz = 20,
