@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<paths>
+    <external-files-path
+        name="pcr_logs"
+        path="Documents/pcr_logs/" />
+    <files-path
+        name="internal_pcr_logs"
+        path="pcr_logs/" />
+</paths>
